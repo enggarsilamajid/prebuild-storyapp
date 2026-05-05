@@ -1,0 +1,2 @@
+APP_URL= https://enggarsilamajid.github.io/submission-intermediate-web/
+MAP_SERVICE_API_KEY=<api_key>
