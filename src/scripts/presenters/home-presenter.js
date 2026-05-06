@@ -1,6 +1,6 @@
 import API from '../data/api';
 import L from 'leaflet';
-import { getAllStories } from '../data/database';
+import { getAllStories, saveStory } from '../data/database';
 
 delete L.Icon.Default.prototype._getIconUrl;
 
@@ -39,8 +39,10 @@ export default class HomePresenter {
         return;
       }
 
-      this._view.renderStories(offlineStories);
-      this._addMarkers(offlineStories);
+      const mappedOffline = offlineStories.map(s => ({ ...s, isOffline: true }));
+      this._view.renderStories(mappedOffline);
+      this._addMarkers(mappedOffline);
+      this._setupSaveButton(mappedOffline);
       return;
     }
 
@@ -48,7 +50,10 @@ export default class HomePresenter {
       const response = await API.getStories();
       const stories = Array.isArray(response.listStory) ? response.listStory : [];
 
-      const merged = [...offlineStories, ...stories];
+      const merged = [
+        ...offlineStories.map(s => ({ ...s, isOffline: true })),
+        ...stories
+      ];
 
       if (!merged.length) {
         this._view.renderError('Tidak ada data');
@@ -57,6 +62,7 @@ export default class HomePresenter {
 
       this._view.renderStories(merged);
       this._addMarkers(merged);
+      this._setupSaveButton(merged);
 
       setTimeout(() => {
         if (this._map) this._map.invalidateSize();
@@ -87,6 +93,18 @@ export default class HomePresenter {
             ${story.isOffline ? '<br/><i>(Offline)</i>' : ''}
           `);
       }
+    });
+  }
+
+  _setupSaveButton(stories) {
+    document.querySelectorAll('.save-btn').forEach((btn) => {
+      btn.addEventListener('click', async (e) => {
+        const id = e.target.dataset.id;
+        const story = stories.find((s) => s.id == id);
+        if (!story) return;
+        await saveStory(story);
+        alert('Berhasil disimpan');
+      });
     });
   }
 }

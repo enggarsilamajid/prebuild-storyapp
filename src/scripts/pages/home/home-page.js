@@ -60,6 +60,7 @@ export default class HomePage {
                 <h3>${name}</h3>
                 <p>${date}</p>
                 <p>${description}</p>
+                <button class="save-btn" data-id="${story.id}">Save</button>
               </div>
             </article>
           `;
