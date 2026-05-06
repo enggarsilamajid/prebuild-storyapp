@@ -3,7 +3,7 @@ export default class AboutPage {
     return `
       <section class="container">
         <h1>About StoryApp</h1>
-        <h4>Aplikasi berbagi cerita dengan peta interaktif</h4>
+        <h2>Aplikasi berbagi cerita dengan peta interaktif</h2>
       </section>
     `;
   }
