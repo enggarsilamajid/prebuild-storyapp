@@ -22,7 +22,7 @@ export default class HomePage {
     await presenter.init();
   }
 
-  renderStories(stories) {
+  renderStories(stories, favoriteIds = new Set()) {
     const container = document.querySelector('#stories');
 
     if (!stories || stories.length === 0) {
@@ -39,6 +39,7 @@ export default class HomePage {
             ? new Date(story.createdAt).toLocaleDateString('id-ID')
             : '-';
           const photo = story.photoUrl || '';
+          const isSaved = favoriteIds.has(story.id);
 
           return `
             <article class="story-card">
@@ -60,7 +61,13 @@ export default class HomePage {
                 <h3>${name}</h3>
                 <p>${date}</p>
                 <p>${description}</p>
-                <button class="save-btn" data-id="${story.id}">Save</button>
+                <button 
+                  class="save-btn" 
+                  data-id="${story.id}"
+                  ${isSaved ? 'disabled' : ''}
+                >
+                  ${isSaved ? 'Saved ⭐' : 'Save'}
+                </button>
               </div>
             </article>
           `;

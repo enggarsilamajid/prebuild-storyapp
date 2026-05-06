@@ -14,6 +14,7 @@ export default class HomePresenter {
   constructor({ view }) {
     this._view = view;
     this._map = null;
+    this._favoriteIds = new Set();
   }
 
   async init() {
@@ -33,6 +34,8 @@ export default class HomePresenter {
       offlineStories = [];
     }
 
+    this._favoriteIds = new Set(offlineStories.map(s => s.id));
+
     if (!navigator.onLine) {
       if (!offlineStories.length) {
         this._view.renderError('Tidak ada data offline');
@@ -40,7 +43,7 @@ export default class HomePresenter {
       }
 
       const mappedOffline = offlineStories.map(s => ({ ...s, isOffline: true }));
-      this._view.renderStories(mappedOffline);
+      this._view.renderStories(mappedOffline, this._favoriteIds);
       this._addMarkers(mappedOffline);
       this._setupSaveButton(mappedOffline);
       return;
@@ -60,7 +63,7 @@ export default class HomePresenter {
         return;
       }
 
-      this._view.renderStories(merged);
+      this._view.renderStories(merged, this._favoriteIds);
       this._addMarkers(merged);
       this._setupSaveButton(merged);
 
@@ -102,8 +105,13 @@ export default class HomePresenter {
         const id = e.target.dataset.id;
         const story = stories.find((s) => s.id == id);
         if (!story) return;
+
         await saveStory(story);
-        alert('Berhasil disimpan');
+
+        this._favoriteIds.add(story.id);
+
+        e.target.innerText = 'Saved ⭐';
+        e.target.disabled = true;
       });
     });
   }
