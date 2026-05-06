@@ -1,12 +1,12 @@
-const CACHE_NAME = 'storyapp-v3';
+const CACHE_NAME = 'storyapp-v1';
+
+const BASE = self.location.pathname.replace('service-worker.js', '');
 
 const APP_SHELL = [
-  '/submission-intermediate-web/',
-  '/submission-intermediate-web/index.html',
-  '/submission-intermediate-web/scripts/index.js',
-  '/submission-intermediate-web/styles/styles.css',
-  '/submission-intermediate-web/images/logo.png',
-  '/submission-intermediate-web/manifest.json'
+  BASE,
+  BASE + 'index.html',
+  BASE + 'manifest.json',
+  BASE + 'images/logo.png'
 ];
 
 self.addEventListener('install', (event) => {
@@ -18,18 +18,13 @@ self.addEventListener('install', (event) => {
 
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    (async () => {
-      const keys = await caches.keys();
-      await Promise.all(
-        keys.map((key) => {
-          if (key !== CACHE_NAME) {
-            return caches.delete(key);
-          }
-        })
-      );
-      await self.clients.claim();
-    })()
+    caches.keys().then((keys) =>
+      Promise.all(
+        keys.map((key) => key !== CACHE_NAME && caches.delete(key))
+      )
+    )
   );
+  self.clients.claim();
 });
 
 self.addEventListener('fetch', (event) => {
@@ -40,7 +35,7 @@ self.addEventListener('fetch', (event) => {
       return (
         response ||
         fetch(event.request).catch(() =>
-          caches.match('/submission-intermediate-web/index.html')
+          caches.match(BASE)
         )
       );
     })
@@ -53,15 +48,15 @@ self.addEventListener('push', (event) => {
   try {
     data = event.data.json();
   } catch {
-    data = { title: 'TEST MASUK', body: 'Push tanpa payload' };
+    data = { title: 'Story Baru', body: 'Ada update terbaru' };
   }
 
   event.waitUntil(
-    self.registration.showNotification(data.title || 'Story Baru', {
-      body: data.body || 'Ada cerita baru',
-      icon: '/submission-intermediate-web/images/logo.png',
+    self.registration.showNotification(data.title, {
+      body: data.body,
+      icon: BASE + 'images/logo.png',
       data: {
-        url: '/submission-intermediate-web/#/',
+        url: BASE + '#/',
       },
     })
   );
@@ -70,8 +65,7 @@ self.addEventListener('push', (event) => {
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
 
-  const url =
-    event.notification.data?.url || '/submission-intermediate-web/#/';
+  const url = event.notification.data?.url || BASE;
 
   event.waitUntil(
     clients.matchAll({ type: 'window' }).then((clientsArr) => {

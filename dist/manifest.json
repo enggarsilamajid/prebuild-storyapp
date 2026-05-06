@@ -2,27 +2,27 @@
   "name": "StoryApp",
   "short_name": "StoryApp",
   "description": "Aplikasi berbagi cerita dengan peta interaktif",
-  "start_url": "/submission-intermediate-web/",
-  "scope": "/submission-intermediate-web/",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#2c3e50",
   "orientation": "portrait",
   "icons": [
     {
-      "src": "/submission-intermediate-web/images/logo.png",
+      "src": "./images/logo.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "/submission-intermediate-web/images/logo.png",
+      "src": "./images/logo.png",
       "sizes": "512x512",
       "type": "image/png"
     }
   ],
   "screenshots": [
     {
-      "src": "/submission-intermediate-web/images/logo.png",
+      "src": "./images/logo.png",
       "sizes": "540x720",
       "type": "image/png",
       "form_factor": "narrow"
@@ -32,13 +32,13 @@
     {
       "name": "Tambah Cerita",
       "short_name": "Tambah",
-      "url": "/submission-intermediate-web/#/add",
+      "url": "./#/add",
       "description": "Tambah cerita baru"
     },
     {
       "name": "Beranda",
       "short_name": "Home",
-      "url": "/submission-intermediate-web/#/",
+      "url": "./#/",
       "description": "Lihat daftar cerita"
     }
   ]
