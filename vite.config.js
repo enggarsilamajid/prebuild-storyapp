@@ -1,10 +1,10 @@
 import { defineConfig } from 'vite';
 import { resolve } from 'path';
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   root: resolve(__dirname, 'src'),
 
-  base: '/storyapp-by-enggar/',
+  base: mode === 'production' ? '/storyapp-by-enggar/' : '/',
 
   publicDir: resolve(__dirname, 'public'),
 
@@ -18,4 +18,4 @@ export default defineConfig({
       '@': resolve(__dirname, 'src'),
     },
   },
-});
+}));
