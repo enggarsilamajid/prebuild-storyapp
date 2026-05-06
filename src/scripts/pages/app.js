@@ -108,29 +108,31 @@ class App {
   }
 
   async renderPage() {
-    const url = getActiveRoute();
-    let page = routes[url];
+  const url = getActiveRoute();
+  let page = routes[url] || routes['/'];
 
-    if (!page) {
-      console.error('Route tidak ditemukan:', url);
-      page = routes['/'];
-    }
-
-    try {
+  try {
+    if (document.startViewTransition) {
+      await document.startViewTransition(async () => {
+        this.#content.innerHTML = await page.render();
+      }).finished;
+    } else {
       this.#content.innerHTML = await page.render();
-      this._updateNav();
-
-      if (page.afterRender) {
-        await page.afterRender();
-      }
-
-      await this._setupPushButton();
-
-    } catch (err) {
-      console.error('Render error:', err);
-      this.#content.innerHTML = `<p style="padding:20px">Terjadi kesalahan</p>`;
     }
+
+    this._updateNav();
+
+    if (page.afterRender) {
+      await page.afterRender();
+    }
+
+    await this._setupPushButton();
+
+  } catch (err) {
+    console.error('Render error:', err);
+    this.#content.innerHTML = `<p style="padding:20px">Terjadi kesalahan</p>`;
   }
+}
 }
 
 export default App;
