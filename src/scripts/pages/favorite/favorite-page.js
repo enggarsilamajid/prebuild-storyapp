@@ -16,7 +16,9 @@ export default class FavoritePage {
     let stories = [];
     try {
       const data = await getAllStories();
-      stories = Array.isArray(data) ? data : [];
+      stories = Array.isArray(data)
+        ? data.filter(s => s.isFavorite)
+        : [];
     } catch {
       stories = [];
     }

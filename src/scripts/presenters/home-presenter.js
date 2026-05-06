@@ -35,11 +35,12 @@ export default class HomePresenter {
     }
 
     const offlineStories = allLocal.filter(s => s.isOffline);
-    const favoriteIds = new Set(
-      allLocal.filter(s => s.isFavorite).map(s => s.id)
-    );
 
-    this._favoriteIds = favoriteIds;
+    this._favoriteIds = new Set(
+      allLocal
+        .filter(s => s.isFavorite)
+        .map(s => s.id)
+    );
 
     if (!navigator.onLine) {
       if (!offlineStories.length) {
@@ -110,7 +111,7 @@ export default class HomePresenter {
         const story = stories.find(s => s.id == id);
         if (!story) return;
 
-        await saveStory({ id: story.id, isFavorite: true });
+        await saveStory({ ...story, isFavorite: true });
 
         this._favoriteIds.add(story.id);
 
