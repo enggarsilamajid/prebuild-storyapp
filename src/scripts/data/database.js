@@ -22,7 +22,7 @@ export async function saveStory(data) {
   const db = await openDB();
   return new Promise((resolve) => {
     const tx = db.transaction(STORE_NAME, 'readwrite');
-    tx.objectStore(STORE_NAME).add(data);
+    tx.objectStore(STORE_NAME).put(data);
     tx.oncomplete = () => resolve();
   });
 }
