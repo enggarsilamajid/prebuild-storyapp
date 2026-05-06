@@ -26,15 +26,20 @@ export default class HomePresenter {
       return;
     }
 
-    let offlineStories = [];
+    let allLocal = [];
     try {
       const data = await getAllStories();
-      offlineStories = Array.isArray(data) ? data : [];
+      allLocal = Array.isArray(data) ? data : [];
     } catch {
-      offlineStories = [];
+      allLocal = [];
     }
 
-    this._favoriteIds = new Set(offlineStories.map(s => s.id));
+    const offlineStories = allLocal.filter(s => s.isOffline);
+    const favoriteIds = new Set(
+      allLocal.filter(s => s.isFavorite).map(s => s.id)
+    );
+
+    this._favoriteIds = favoriteIds;
 
     if (!navigator.onLine) {
       if (!offlineStories.length) {
@@ -42,10 +47,9 @@ export default class HomePresenter {
         return;
       }
 
-      const mappedOffline = offlineStories.map(s => ({ ...s, isOffline: true }));
-      this._view.renderStories(mappedOffline, this._favoriteIds);
-      this._addMarkers(mappedOffline);
-      this._setupSaveButton(mappedOffline);
+      this._view.renderStories(offlineStories, this._favoriteIds);
+      this._addMarkers(offlineStories);
+      this._setupSaveButton(offlineStories);
       return;
     }
 
@@ -54,7 +58,7 @@ export default class HomePresenter {
       const stories = Array.isArray(response.listStory) ? response.listStory : [];
 
       const merged = [
-        ...offlineStories.map(s => ({ ...s, isOffline: true })),
+        ...offlineStories,
         ...stories
       ];
 
@@ -103,10 +107,10 @@ export default class HomePresenter {
     document.querySelectorAll('.save-btn').forEach((btn) => {
       btn.addEventListener('click', async (e) => {
         const id = e.target.dataset.id;
-        const story = stories.find((s) => s.id == id);
+        const story = stories.find(s => s.id == id);
         if (!story) return;
 
-        await saveStory(story);
+        await saveStory({ id: story.id, isFavorite: true });
 
         this._favoriteIds.add(story.id);
 
