@@ -1,2 +1,2 @@
-APP_URL= https://enggarsilamajid.github.io/submission-intermediate-web/
+APP_URL= https://enggarsilamajid.github.io/storyapp-by-enggar/
 MAP_SERVICE_API_KEY=<api_key>
