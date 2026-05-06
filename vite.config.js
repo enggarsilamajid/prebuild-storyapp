@@ -4,9 +4,9 @@ import { resolve } from 'path';
 export default defineConfig({
   root: resolve(__dirname, 'src'),
 
-  base: '/submission-intermediate-web/',
+  base: '/storyapp-by-enggar/',
 
-  publicDir: resolve(__dirname, 'src', 'public'),
+  publicDir: resolve(__dirname, 'public'),
 
   build: {
     outDir: resolve(__dirname, 'dist'),
