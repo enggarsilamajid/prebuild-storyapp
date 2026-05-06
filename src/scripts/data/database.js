@@ -9,7 +9,7 @@ function openDB() {
     request.onupgradeneeded = (e) => {
       const db = e.target.result;
       if (!db.objectStoreNames.contains(STORE_NAME)) {
-        db.createObjectStore(STORE_NAME, { keyPath: 'id', autoIncrement: true });
+        db.createObjectStore(STORE_NAME, { keyPath: 'id' });
       }
     };
 
