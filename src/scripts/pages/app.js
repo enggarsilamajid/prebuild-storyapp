@@ -38,24 +38,32 @@ class App {
 
     let html = `
       <li><button id="install-btn" style="display:none">Install App</button></li>
-      <li><a href="#/">Beranda</a></li>
-      <li><a href="#/about">About</a></li>
+      <li><a href="#/" class="nav-link">Beranda</a></li>
+      <li><a href="#/about" class="nav-link">About</a></li>
     `;
 
     if (token) {
       html += `
-        <li><a href="#/add">Tambah Data</a></li>
-        <li><a href="#" id="logout-btn">Logout</a></li>
+        <li><a href="#/favorite" class="nav-link">Favorite</a></li>
+        <li><a href="#/add" class="nav-link">Tambah Data</a></li>
+        <li><a href="#" id="logout-btn" class="nav-link">Logout</a></li>
         <li><button id="btn-subscribe">Memuat...</button></li>
       `;
     } else {
       html += `
-        <li><a href="#/login">Login</a></li>
-        <li><a href="#/register">Register</a></li>
+        <li><a href="#/login" class="nav-link">Login</a></li>
+        <li><a href="#/register" class="nav-link">Register</a></li>
       `;
     }
 
     navList.innerHTML = html;
+
+    document.querySelectorAll('.nav-link').forEach((link) => {
+  link.addEventListener('click', () => {
+    this.#navigationDrawer.classList.remove('open');
+    this.#drawerButton.setAttribute('aria-expanded', false);
+  });
+});
 
     const logoutBtn = document.querySelector('#logout-btn');
     if (logoutBtn) {
