@@ -23,6 +23,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   setupInstallButton();
 });
 
+
+// ================= SERVICE WORKER =================
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', async () => {
     try {
@@ -34,6 +36,8 @@ if ('serviceWorker' in navigator) {
   });
 }
 
+
+// ================= INSTALL BUTTON =================
 function setupInstallButton() {
   const btn = document.querySelector('#install-btn');
   if (!btn) return;
@@ -82,17 +86,18 @@ window.addEventListener('appinstalled', () => {
   btn.disabled = true;
 });
 
+
+// ================= OFFLINE SYNC =================
 function base64ToBlob(base64) {
   if (!base64 || !base64.includes(',')) return null;
 
   const arr = base64.split(',');
   const mime = arr[0].match(/:(.*?);/)?.[1] || 'image/jpeg';
   const bstr = atob(arr[1]);
-  let n = bstr.length;
-  const u8arr = new Uint8Array(n);
+  const u8arr = new Uint8Array(bstr.length);
 
-  while (n--) {
-    u8arr[n] = bstr.charCodeAt(n);
+  for (let i = 0; i < bstr.length; i++) {
+    u8arr[i] = bstr.charCodeAt(i);
   }
 
   return new Blob([u8arr], { type: mime });
@@ -110,11 +115,10 @@ async function syncOfflineData() {
 
   for (const story of stories) {
     try {
-      const formData = new FormData();
-
       const blob = base64ToBlob(story.photoUrl);
       if (!blob) continue;
 
+      const formData = new FormData();
       formData.append('description', story.description || '');
       formData.append('photo', blob);
       formData.append('lat', story.lat);
@@ -133,6 +137,9 @@ window.addEventListener('online', () => {
   syncOfflineData();
 });
 
+
+// ================= PUSH NOTIFICATION =================
+
 const VAPID_PUBLIC_KEY = 'BCCs2eonMI-6H2ctvFaWg-UYdDv387Vno_bzUzALpB442r2lCnsHmtrx8biyPi_E-1fSGABK_Qs_GlvPoJJqxbk';
 
 function urlBase64ToUint8Array(base64String) {
@@ -143,6 +150,17 @@ function urlBase64ToUint8Array(base64String) {
 
   const rawData = atob(base64);
   return Uint8Array.from([...rawData].map((char) => char.charCodeAt(0)));
+}
+
+function formatSubscription(sub) {
+  const json = sub.toJSON();
+  return {
+    endpoint: sub.endpoint,
+    keys: {
+      p256dh: json.keys.p256dh,
+      auth: json.keys.auth,
+    },
+  };
 }
 
 window.getPushSubscription = async function () {
@@ -179,7 +197,7 @@ window.subscribePush = async function () {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
-      body: JSON.stringify(subscription),
+      body: JSON.stringify(formatSubscription(subscription)),
     });
 
     return subscription;
@@ -203,7 +221,7 @@ window.unsubscribePush = async function () {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
-      body: JSON.stringify(sub),
+      body: JSON.stringify(formatSubscription(sub)),
     });
 
     await sub.unsubscribe();
